@@ -24,7 +24,7 @@ internal class GetOrderBooksTest {
     }
 
     @Test
-    fun `Provides the quantity and price average of the order book (asks and bids) for each symbol`() = runTest {
+    fun `should provide the quantity and price average of the order book (asks and bids) for each symbol`() = runTest {
         givenExistentSymbols()
         givenExistentOrderEntriesForEachSymbol()
 
@@ -34,8 +34,8 @@ internal class GetOrderBooksTest {
     }
 
     private fun givenExistentOrderEntriesForEachSymbol() {
-        val ask = OrderEntry(OrderType.ASK, 100.5, 1.2)
-        val bid = OrderEntry(OrderType.BID, 145.5, 3.2)
+        val ask = OrderEntry(OrderType.ASK, ASK_PRICE, ASK_QUANTITY)
+        val bid = OrderEntry(OrderType.BID, BID_PRICE, BID_QUANTITY)
 
         existentOrderEntries = existentSymbols.associate { it to listOf(ask, bid) }
         existentSymbols.forEach { symbol ->
@@ -50,26 +50,50 @@ internal class GetOrderBooksTest {
 
     private fun shouldRetrieveOrderBooksForEachSymbol() {
 
-        val expectedOrderBooks = existentSymbols.map { symbol ->
-            val entries = existentOrderEntries[symbol]!!
-            val totalQuantity = entries.sumOf { it.quantity }
-            val priceAvg =  entries.sumOf { it.price } / totalQuantity
-
-            OrderBook(symbol, priceAvg, totalQuantity)
-        }
+        val expectedOrderBooks = listOf(OrderBook_BTC_USD, OrderBook_CEUR_USDT, OrderBook_PAX_USD, OrderBook_STX_USD)
 
         assertEquals(expectedOrderBooks.count(), existentSymbols.count())
         assertEquals(expectedOrderBooks, actualOrderBooks)
+
     }
+
 
     private suspend fun whenGetOrderBooks() {
         actualOrderBooks = getOrderBooks()
     }
 
     companion object {
-        private val BTC_USD_SYMBOL = "BTC-USD"
-        private val CEUR_USDT_SYMBOL = "CEUR_USDT"
-        private val PAX_USD_SYMBOL = "PAX-USD"
-        private val STX_USD_SYMBOL = "STX_USD"
+        private const val ASK_PRICE = 100.0
+        private const val BID_PRICE = 200.0
+        private const val ASK_QUANTITY = 2.0
+        private const val BID_QUANTITY = 3.0
+        private const val ORDER_PRICE_AVG = 60.0
+        private const val ORDER_TOTAL_QUANTITY = 5.0
+        private const val BTC_USD_SYMBOL = "BTC-USD"
+        private const val CEUR_USDT_SYMBOL = "CEUR_USDT"
+        private const val PAX_USD_SYMBOL = "PAX-USD"
+        private const val STX_USD_SYMBOL = "STX_USD"
+
+        private val OrderBook_BTC_USD = OrderBook(
+            BTC_USD_SYMBOL,
+            ORDER_PRICE_AVG,
+            ORDER_TOTAL_QUANTITY
+        )
+        private val OrderBook_CEUR_USDT = OrderBook(
+            CEUR_USDT_SYMBOL,
+            ORDER_PRICE_AVG,
+            ORDER_TOTAL_QUANTITY
+        )
+        private val OrderBook_PAX_USD = OrderBook(
+            PAX_USD_SYMBOL,
+            ORDER_PRICE_AVG,
+            ORDER_TOTAL_QUANTITY
+        )
+        private val OrderBook_STX_USD = OrderBook(
+            STX_USD_SYMBOL,
+            ORDER_PRICE_AVG,
+            ORDER_TOTAL_QUANTITY
+        )
+
     }
 }
