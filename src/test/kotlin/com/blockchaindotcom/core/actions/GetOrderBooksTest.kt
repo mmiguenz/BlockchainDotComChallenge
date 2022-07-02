@@ -1,14 +1,18 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.blockchaindotcom.core.actions
 
 import com.blockchaindotcom.core.domain.*
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 internal class GetOrderBooksTest {
+    private var orderBySymbol: Boolean? = null
     private var symbolToFilter: String? = null
     private var orderTypeToFilter: OrderType? = null
     private lateinit var getOrderBooks: GetOrderBooks
@@ -57,6 +61,20 @@ internal class GetOrderBooksTest {
         shouldRetrieveOrderBooksFilteredBySymbol()
     }
 
+    @Test
+    fun `given a OrderBySymbol parameter results should be ordered by symbol alphabetically`() = runTest {
+        givenExistentSymbols()
+        givenExistentOrderEntriesForEachSymbol()
+        givenAOrderBySymbolParam()
+        whenGetOrderBooks()
+
+        shouldRetrieveOrderBooksOrderedAlphabetically()
+    }
+
+    private fun givenAOrderBySymbolParam() {
+        orderBySymbol = true
+    }
+
     private fun givenAnOrderTypeToFilter() {
         orderTypeToFilter = OrderType.ASK
     }
@@ -76,17 +94,17 @@ internal class GetOrderBooksTest {
     }
 
     private fun givenExistentSymbols() {
-        existentSymbols = listOf(BTC_USD_SYMBOL, CEUR_USDT_SYMBOL, PAX_USD_SYMBOL, STX_USD_SYMBOL)
+        existentSymbols = listOf(PAX_USD_SYMBOL, BTC_USD_SYMBOL, STX_USD_SYMBOL, CEUR_USDT_SYMBOL)
         coEvery { symbolsRepository.get() } returns existentSymbols
     }
 
     private suspend fun whenGetOrderBooks() {
-        actualOrderBooks = getOrderBooks(symbolToFilter, orderTypeToFilter)
+        actualOrderBooks = getOrderBooks(symbolToFilter, orderTypeToFilter, orderBySymbol)
     }
 
     private fun shouldRetrieveOrderBooksForEachSymbol() {
         assertEquals(orderBooks.count(), existentSymbols.count())
-        assertEquals(orderBooks, actualOrderBooks)
+        assertEquals(orderBooks.toSet(), actualOrderBooks.toSet())
 
     }
 
@@ -98,6 +116,10 @@ internal class GetOrderBooksTest {
     private fun shouldRetrieveOrderBooksFilteredBySymbol() {
         val orderBooksFiltered =  listOf(OrderBook_BTC_USD)
         assertEquals(orderBooksFiltered, actualOrderBooks)
+    }
+
+    private fun shouldRetrieveOrderBooksOrderedAlphabetically() {
+        assertEquals(orderBooks.sortedBy { it.symbol }, actualOrderBooks)
     }
 
     companion object {
