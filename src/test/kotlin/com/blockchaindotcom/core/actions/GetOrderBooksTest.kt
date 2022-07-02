@@ -47,6 +47,16 @@ internal class GetOrderBooksTest {
         shouldRetrieveOrderBooksFilteredBySymbolAndType()
     }
 
+    @Test
+    fun `given a symbol results should be filter out`() = runTest {
+        givenExistentSymbols()
+        givenExistentOrderEntriesForEachSymbol()
+        givenASymbolToFilter()
+        whenGetOrderBooks()
+
+        shouldRetrieveOrderBooksFilteredBySymbol()
+    }
+
     private fun givenAnOrderTypeToFilter() {
         orderTypeToFilter = OrderType.ASK
     }
@@ -70,6 +80,10 @@ internal class GetOrderBooksTest {
         coEvery { symbolsRepository.get() } returns existentSymbols
     }
 
+    private suspend fun whenGetOrderBooks() {
+        actualOrderBooks = getOrderBooks(symbolToFilter, orderTypeToFilter)
+    }
+
     private fun shouldRetrieveOrderBooksForEachSymbol() {
         assertEquals(orderBooks.count(), existentSymbols.count())
         assertEquals(orderBooks, actualOrderBooks)
@@ -81,8 +95,9 @@ internal class GetOrderBooksTest {
         assertEquals(orderBooksFiltered, actualOrderBooks)
     }
 
-    private suspend fun whenGetOrderBooks() {
-        actualOrderBooks = getOrderBooks(symbolToFilter, orderTypeToFilter)
+    private fun shouldRetrieveOrderBooksFilteredBySymbol() {
+        val orderBooksFiltered =  listOf(OrderBook_BTC_USD)
+        assertEquals(orderBooksFiltered, actualOrderBooks)
     }
 
     companion object {
