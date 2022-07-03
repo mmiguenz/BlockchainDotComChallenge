@@ -75,6 +75,16 @@ internal class GetOrderBooksTest {
         shouldRetrieveOrderBooksOrderedAlphabetically()
     }
 
+    @Test
+    fun `given a an empty list of orderEntries price avg should be 0`() = runTest {
+        givenExistentSymbols()
+        givenNonExistentOrderEntriesForEachSymbol()
+
+        whenGetOrderBooks()
+
+        shouldRetrieveOrderBooksWithPriceAvgDefaultedToZero()
+    }
+
     private fun givenAOrderBySymbolParam() {
         orderBySymbol = true
     }
@@ -95,6 +105,10 @@ internal class GetOrderBooksTest {
         existentSymbols.forEach { symbol ->
             coEvery { ordersEntriesRepository.get(symbol) } returns existentOrderEntries[symbol]!!
         }
+    }
+
+    private fun givenNonExistentOrderEntriesForEachSymbol() {
+        coEvery { ordersEntriesRepository.get(any()) } returns listOf()
     }
 
     private fun givenExistentSymbols() {
@@ -124,6 +138,11 @@ internal class GetOrderBooksTest {
 
     private fun shouldRetrieveOrderBooksOrderedAlphabetically() {
         assertEquals(orderBooks.sortedBy { it.symbol }, actualOrderBooks)
+    }
+
+    private fun shouldRetrieveOrderBooksWithPriceAvgDefaultedToZero() {
+        val orderBooksDefaulted = existentSymbols.map { OrderBook(it, 0.0, 0.0) }
+        assertEquals(orderBooksDefaulted.toSet(), actualOrderBooks.toSet())
     }
 
     companion object {

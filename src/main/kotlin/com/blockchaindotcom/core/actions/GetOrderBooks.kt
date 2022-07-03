@@ -22,7 +22,10 @@ class GetOrderBooks(
         val orderBooksResult = symbols.map { symbol ->
             val orderEntriesForSymbol = orderEntries[symbol]!!
             val quantity = orderEntriesForSymbol.sumOf { it.quantity }
-            val priceAvg = orderEntriesForSymbol.sumOf { it.price * it.quantity } / quantity
+
+            val priceAvg = if (quantity > 0)
+                orderEntriesForSymbol.sumOf { it.price * it.quantity } / quantity
+            else .0
 
             OrderBook(symbol, priceAvg, quantity)
         }
