@@ -131,9 +131,9 @@ internal class GetOrderBooksTest {
         private const val BID_PRICE = 200.0
         private const val ASK_QUANTITY = 2.0
         private const val BID_QUANTITY = 3.0
-        private const val ORDER_PRICE_AVG = 60.0
-        private const val ORDER_PRICE_AVG_ONLY_ASK = 50.0
-        private const val ORDER_TOTAL_QUANTITY = 5.0
+        private const val ORDER_TOTAL_QUANTITY = ASK_QUANTITY + BID_QUANTITY
+        private const val ORDER_PRICE_AVG = (ASK_PRICE * ASK_QUANTITY + BID_PRICE * BID_QUANTITY) / ORDER_TOTAL_QUANTITY
+        private const val ORDER_PRICE_AVG_ONLY_ASK = (ASK_PRICE * ASK_QUANTITY) / (ASK_QUANTITY )
         private const val BTC_USD_SYMBOL = "BTC-USD"
         private const val CEUR_USDT_SYMBOL = "CEUR_USDT"
         private const val PAX_USD_SYMBOL = "PAX-USD"
