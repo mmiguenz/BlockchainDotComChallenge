@@ -1,5 +1,6 @@
-package com.blockchaindotcom.delivery.http.handler.core
+package com.blockchaindotcom.delivery.http
 
+import com.blockchaindotcom.delivery.http.handler.Handler
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.routing.*

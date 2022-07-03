@@ -1,4 +1,4 @@
-package com.blockchaindotcom.delivery.http.handler.core
+package com.blockchaindotcom.delivery.http.handler
 
 import io.ktor.application.*
 

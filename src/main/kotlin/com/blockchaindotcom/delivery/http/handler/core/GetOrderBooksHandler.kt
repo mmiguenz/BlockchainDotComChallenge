@@ -1,6 +1,7 @@
 package com.blockchaindotcom.delivery.http.handler.core
 
 import com.blockchaindotcom.core.actions.GetOrderBooks
+import com.blockchaindotcom.delivery.http.handler.Handler
 import io.ktor.application.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -14,7 +15,7 @@ class GetOrderBooksHandler(private val getOrderBooks: GetOrderBooks? = null) : H
     val logger: Logger = LoggerFactory.getLogger(this::class.java)
     override fun routing(a: Application) {
         a.routing {
-            route("/test") {
+            route("/exchanges/{exchange-name}/order-books") {
                 get {
                     withContext(Dispatchers.IO) {
                         getOrderBooksHandler()
@@ -25,6 +26,7 @@ class GetOrderBooksHandler(private val getOrderBooks: GetOrderBooks? = null) : H
     }
 
     private suspend fun PipelineContext<Unit, ApplicationCall>.getOrderBooksHandler() {
-        call.respond("OK")
+        val exchangeName = call.parameters["exchange-name"].toString()
+        call.respond("OK $exchangeName")
     }
 }

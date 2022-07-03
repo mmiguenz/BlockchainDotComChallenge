@@ -1,4 +1,4 @@
-import com.blockchaindotcom.providers.DeliveyProvider.apiServer
+import com.blockchaindotcom.providers.DeliveryProvider.apiServer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

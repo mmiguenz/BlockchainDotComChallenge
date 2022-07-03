@@ -1,9 +1,9 @@
 package com.blockchaindotcom.providers
 
 import com.blockchaindotcom.delivery.http.handler.core.GetOrderBooksHandler
-import com.blockchaindotcom.delivery.http.handler.core.HttpApiServer
+import com.blockchaindotcom.delivery.http.HttpApiServer
 
-object DeliveyProvider {
+object DeliveryProvider {
     val getOrderBooksHandler by lazy {
         GetOrderBooksHandler()
     }
