@@ -10,7 +10,7 @@ class GetOrderBooks(
     private val symbolsRepository: SymbolsRepository,
     private val orderEntriesRepository: OrderEntriesRepository
 ) {
-    operator suspend fun invoke(
+    suspend operator fun invoke(
         symbolToFilter: String?,
         orderTypeToFilter: OrderType?,
         orderBySymbol: Boolean?

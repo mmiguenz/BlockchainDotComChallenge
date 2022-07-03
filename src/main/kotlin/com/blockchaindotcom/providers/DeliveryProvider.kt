@@ -5,7 +5,7 @@ import com.blockchaindotcom.delivery.http.HttpApiServer
 
 object DeliveryProvider {
     val getOrderBooksHandler by lazy {
-        GetOrderBooksHandler()
+        GetOrderBooksHandler(ActionsProvider.getOrderBooksAction)
     }
     val apiServer by lazy {
         HttpApiServer(
