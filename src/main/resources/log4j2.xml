@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="warn" packages="org.apache.logging.log4j.core">
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%c{1}:%L] - %msg%n"/>
+        </Console>
+
+        <Console name="ConsoleJSONAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern='{"level":"%p", "message":"%m", "loggerName":"%c:%L","timestamp":"%d{UNIX_MILLIS}","thread":"%t"} %throwable{full} %n' />
+        </Console>
+        <Null name="NullAppender"/>
+    </appenders>
+
+    <loggers>
+        <logger name="com.blockchaindotcom" level="INFO" />
+        <root level="INFO">
+            <appender-ref ref="ConsoleJSONAppender"/>
+            <appender-ref ref="NullAppender" level="ERROR"/>
+        </root>
+    </loggers>
+</configuration>
