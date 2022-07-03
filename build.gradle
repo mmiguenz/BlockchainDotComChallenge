@@ -32,6 +32,12 @@ dependencies {
     implementation "org.apache.logging.log4j:log4j-api:$log4JVersion"
     implementation "org.apache.logging.log4j:log4j-core:$log4JVersion"
     implementation "org.apache.logging.log4j:log4j-slf4j-impl:$log4JVersion"
+    implementation "io.ktor:ktor-client-json:$ktor_version"
+    implementation "io.ktor:ktor-client-serialization-jvm:$ktor_version"
+    implementation "io.ktor:ktor-client-core:$ktor_version"
+    implementation "io.ktor:ktor-client-apache:$ktor_version"
+    implementation "io.ktor:ktor-client-logging:$ktor_version"
+    implementation "io.ktor:ktor-client-logging-jvm:$ktor_version"
 
 }
 
