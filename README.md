@@ -21,6 +21,6 @@ docker run blockchainchallenge
 ```
 
 ### Example :
-https://blockchaindotcom-challenge.herokuapp.comexchanges/blockchaindotcom/order-books?sorted=true
+https://blockchaindotcom-challenge.herokuapp.com/exchanges/blockchaindotcom/order-books?sorted=true
 
 - For further details check [openapi.yaml](https://github.com/mmiguenz/BlockchainDotComChallenge/blob/main/openapi.yml)
