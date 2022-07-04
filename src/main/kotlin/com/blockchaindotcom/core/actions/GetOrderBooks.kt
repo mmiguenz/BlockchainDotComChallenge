@@ -28,7 +28,7 @@ class GetOrderBooks(
 
         val orderBooksResult = buildOrderBooks(symbols, orderEntries)
 
-        return orderBySymbol?.let { orderBooksResult.sortedBy { it.symbol } } ?: orderBooksResult
+        return orderBooksResult.sorted(orderBySymbol == true)
     }
 
     private fun buildOrderBooks(
@@ -62,7 +62,8 @@ class GetOrderBooks(
 
         val getOrderEntriesAsyncJobs = symbols.map { symbol ->
             GlobalScope.launch {
-                orderEntries[symbol] = orderEntriesRepository[exchangeType]!!.get(symbol).filterByOrderType(orderTypeToFilter)
+                orderEntries[symbol] =
+                    orderEntriesRepository[exchangeType]!!.get(symbol).filterByOrderType(orderTypeToFilter)
             }
         }
 
@@ -81,6 +82,13 @@ class GetOrderBooks(
         orderTypeToFilter?.let { it -> this.filter { orderEntry -> orderEntry.orderType == it } }
             ?: this
 
+}
+
+private fun List<OrderBook>.sorted(orderBySymbol: Boolean): List<OrderBook> {
+    return if (orderBySymbol) {
+        this.sortedBy { it.symbol }
+    } else
+        this
 }
 
 
