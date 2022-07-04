@@ -1,7 +1,8 @@
 package com.blockchaindotcom.delivery.http
 
+import com.blockchaindotcom.core.domain.exceptions.InvalidExchangeException
 import com.blockchaindotcom.core.domain.exceptions.InvalidSymbolException
-import com.blockchaindotcom.core.domain.exceptions.UnknownOrderTypeException
+import com.blockchaindotcom.core.domain.exceptions.InvalidOrderTypeException
 import com.blockchaindotcom.delivery.http.handler.Handler
 import io.ktor.application.*
 import io.ktor.features.*
@@ -66,12 +67,17 @@ class HttpApiServer(
         }
     }
     private fun StatusPages.Configuration.exceptionHandlers(logger: Logger) {
-        exception<UnknownOrderTypeException> { cause ->
+        exception<InvalidOrderTypeException> { cause ->
             logger.warn("${call.request.path()}: ${cause.localizedMessage}", cause)
             call.respond(HttpStatusCode.BadRequest, cause.message!!)
         }
 
         exception<InvalidSymbolException> { cause ->
+            logger.warn("${call.request.path()}: ${cause.localizedMessage}", cause)
+            call.respond(HttpStatusCode.BadRequest, cause.message!!)
+        }
+
+        exception<InvalidExchangeException> { cause ->
             logger.warn("${call.request.path()}: ${cause.localizedMessage}", cause)
             call.respond(HttpStatusCode.BadRequest, cause.message!!)
         }

@@ -1,5 +1,5 @@
 package com.blockchaindotcom.core.domain.exceptions
 
-class InvalidSymbolException : Throwable("Invalid Symbol to filter") {
+class InvalidSymbolException(symbol: String?) : Throwable("$symbol is not a valid symbol") {
 
 }

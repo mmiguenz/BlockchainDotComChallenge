@@ -3,6 +3,7 @@
 package com.blockchaindotcom.core.actions
 
 import com.blockchaindotcom.core.domain.exceptions.InvalidSymbolException
+import com.blockchaindotcom.core.domain.model.ExchangeType
 import com.blockchaindotcom.core.domain.model.OrderBook
 import com.blockchaindotcom.core.domain.model.OrderEntry
 import com.blockchaindotcom.core.domain.model.OrderType
@@ -18,6 +19,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 internal class GetOrderBooksTest {
+    private lateinit var exchangeType: ExchangeType
     private var orderBySymbol: Boolean? = null
     private var symbolToFilter: String? = null
     private var orderTypeToFilter: OrderType? = null
@@ -27,16 +29,21 @@ internal class GetOrderBooksTest {
     private lateinit var actualOrderBooks: List<OrderBook>
     private lateinit var symbolsRepository: SymbolsRepository
     private lateinit var ordersEntriesRepository: OrderEntriesRepository
+    private lateinit var symbolsRepositories: Map<ExchangeType, SymbolsRepository>
+    private lateinit var ordersEntriesRepositories: Map<ExchangeType, OrderEntriesRepository>
 
     @BeforeEach
     fun setUp() {
         symbolsRepository = mockk()
         ordersEntriesRepository = mockk()
-        getOrderBooks = GetOrderBooks(symbolsRepository, ordersEntriesRepository)
+        symbolsRepositories = mapOf(ExchangeType.BLOCKCHAIN_DOT_COM to symbolsRepository)
+        ordersEntriesRepositories = mapOf(ExchangeType.BLOCKCHAIN_DOT_COM to ordersEntriesRepository)
+        getOrderBooks = GetOrderBooks(symbolsRepositories, ordersEntriesRepositories)
     }
 
     @Test
-    fun `should provide the quantity and price average of the order book (asks and bids) for each symbol`() = runTest {
+    fun `given a valid exchange should provide the quantity and price average of the order book (asks and bids) for each symbol`() = runTest {
+        givenAValidExchange()
         givenExistentSymbols()
         givenExistentOrderEntriesForEachSymbol()
 
@@ -45,8 +52,13 @@ internal class GetOrderBooksTest {
         shouldRetrieveOrderBooksForEachSymbol()
     }
 
+    private fun givenAValidExchange() {
+        exchangeType = ExchangeType.BLOCKCHAIN_DOT_COM
+    }
+
     @Test
     fun `given a symbol and an order type results should be filter out`() = runTest {
+        givenAValidExchange()
         givenExistentSymbols()
         givenExistentOrderEntriesForEachSymbol()
         givenASymbolToFilter()
@@ -59,6 +71,7 @@ internal class GetOrderBooksTest {
 
     @Test
     fun `given a symbol results should be filter out`() = runTest {
+        givenAValidExchange()
         givenExistentSymbols()
         givenExistentOrderEntriesForEachSymbol()
         givenASymbolToFilter()
@@ -69,6 +82,7 @@ internal class GetOrderBooksTest {
 
     @Test
     fun `given a OrderBySymbol parameter results should be ordered by symbol alphabetically`() = runTest {
+        givenAValidExchange()
         givenExistentSymbols()
         givenExistentOrderEntriesForEachSymbol()
         givenAOrderBySymbolParam()
@@ -79,6 +93,7 @@ internal class GetOrderBooksTest {
 
     @Test
     fun `given a an empty list of orderEntries price avg should be 0`() = runTest {
+        givenAValidExchange()
         givenExistentSymbols()
         givenNonExistentOrderEntriesForEachSymbol()
 
@@ -89,6 +104,7 @@ internal class GetOrderBooksTest {
 
     @Test
     fun `given a an invalid symbol should fail`() = runTest {
+        givenAValidExchange()
         givenExistentSymbols()
         givenASymbolToFilter("Invalid-Symbol")
 
@@ -127,7 +143,7 @@ internal class GetOrderBooksTest {
     }
 
     private suspend fun whenGetOrderBooks() {
-        actualOrderBooks = getOrderBooks(symbolToFilter, orderTypeToFilter, orderBySymbol)
+        actualOrderBooks = getOrderBooks(exchangeType, symbolToFilter, orderTypeToFilter, orderBySymbol)
     }
 
     private fun shouldRetrieveOrderBooksForEachSymbol() {

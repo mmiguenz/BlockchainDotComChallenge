@@ -1,6 +1,7 @@
 package com.blockchaindotcom.core.actions
 
 import com.blockchaindotcom.core.domain.exceptions.InvalidSymbolException
+import com.blockchaindotcom.core.domain.model.ExchangeType
 import com.blockchaindotcom.core.domain.model.OrderBook
 import com.blockchaindotcom.core.domain.model.OrderEntry
 import com.blockchaindotcom.core.domain.model.OrderType
@@ -10,19 +11,20 @@ import kotlinx.coroutines.*
 import java.util.concurrent.ConcurrentHashMap
 
 class GetOrderBooks(
-    private val symbolsRepository: SymbolsRepository,
-    private val orderEntriesRepository: OrderEntriesRepository
+    private val symbolsRepository: Map<ExchangeType, SymbolsRepository>,
+    private val orderEntriesRepository: Map<ExchangeType, OrderEntriesRepository>
 ) {
     suspend operator fun invoke(
+        exchangeType: ExchangeType,
         symbolToFilter: String?,
         orderTypeToFilter: OrderType?,
         orderBySymbol: Boolean?
     ): List<OrderBook> {
-        val symbols = symbolsRepository.get().filterBySymbol(symbolToFilter)
+        val symbols = symbolsRepository[exchangeType]!!.get().filterBySymbol(symbolToFilter)
 
-        checkValidSymbolToFilter(symbols)
+        checkValidSymbolToFilter(symbols, symbolToFilter)
 
-        val orderEntries = getOrderEntries(symbols, orderTypeToFilter)
+        val orderEntries = getOrderEntries(exchangeType, symbols, orderTypeToFilter)
 
         val orderBooksResult = buildOrderBooks(symbols, orderEntries)
 
@@ -46,12 +48,13 @@ class GetOrderBooks(
         return orderBooksResult
     }
 
-    private fun checkValidSymbolToFilter(symbols: List<String>) {
+    private fun checkValidSymbolToFilter(symbols: List<String>, symbolToFilter: String?) {
         if (symbols.isEmpty())
-            throw InvalidSymbolException()
+            throw InvalidSymbolException(symbolToFilter)
     }
 
     private suspend fun getOrderEntries(
+        exchangeType: ExchangeType,
         symbols: List<String>,
         orderTypeToFilter: OrderType?
     ): ConcurrentHashMap<String, List<OrderEntry>> {
@@ -59,7 +62,7 @@ class GetOrderBooks(
 
         val getOrderEntriesAsyncJobs = symbols.map { symbol ->
             GlobalScope.launch {
-                orderEntries[symbol] = orderEntriesRepository.get(symbol).filterByOrderType(orderTypeToFilter)
+                orderEntries[symbol] = orderEntriesRepository[exchangeType]!!.get(symbol).filterByOrderType(orderTypeToFilter)
             }
         }
 

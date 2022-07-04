@@ -1,6 +1,6 @@
 package com.blockchaindotcom.core.domain.model
 
-import com.blockchaindotcom.core.domain.exceptions.UnknownOrderTypeException
+import com.blockchaindotcom.core.domain.exceptions.InvalidOrderTypeException
 
 enum class OrderType {
     ASK,
@@ -15,7 +15,7 @@ enum class OrderType {
                 }
 
             } catch (ex: Throwable) {
-                throw UnknownOrderTypeException()
+                throw InvalidOrderTypeException(orderType)
             }
         }
     }

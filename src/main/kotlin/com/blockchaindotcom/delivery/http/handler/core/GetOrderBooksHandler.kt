@@ -1,6 +1,7 @@
 package com.blockchaindotcom.delivery.http.handler.core
 
 import com.blockchaindotcom.core.actions.GetOrderBooks
+import com.blockchaindotcom.core.domain.model.ExchangeType
 import com.blockchaindotcom.core.domain.model.OrderBook
 import com.blockchaindotcom.core.domain.model.OrderType
 import com.blockchaindotcom.delivery.http.handler.Handler
@@ -16,7 +17,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class GetOrderBooksHandler(private val getOrderBooks: GetOrderBooks) : Handler {
-    val logger: Logger = LoggerFactory.getLogger(this::class.java)
     override fun routing(a: Application) {
         a.routing {
             route("/exchanges/{exchange-name}/order-books") {
@@ -30,12 +30,12 @@ class GetOrderBooksHandler(private val getOrderBooks: GetOrderBooks) : Handler {
     }
 
     private suspend fun PipelineContext<Unit, ApplicationCall>.getOrderBooksHandler() {
-        val exchangeName = call.parameters["exchange-name"]
+        val exchangeName = call.parameters["exchange-name"].let { ExchangeType[it] }!!
         val symbol = call.request.queryParameters["symbol"]
         val orderType = call.request.queryParameters["type"]?.let { OrderType[it] }
         val orderBySymbol = call.request.queryParameters["sorted"].toBoolean()
 
-        val result = getOrderBooks(symbol, orderType, orderBySymbol)
+        val result = getOrderBooks(exchangeName, symbol, orderType, orderBySymbol)
         call.respond(result.toOrderBookResponse())
     }
 }
