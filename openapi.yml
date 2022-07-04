@@ -1,0 +1,90 @@
+openapi: 3.0.0
+info:
+  title: Blockchain.com Challenge
+  description: API to retreive data from Exchanges
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/
+    description: Local Server
+paths:
+  /exchanges/{exchange-name}/order-books:
+    get:
+      tags:
+        - "Order Books"
+      summary: "Retrieves Order Books for especified Exchange"
+      description: ""
+      parameters:
+        - in: "path"
+          name: "exchange-name"
+          description: "exchange identifier"
+          required: true
+          schema:
+            type: "string"
+            default: "blockchaindotcom"
+        - in: "query"
+          name: "symbol"
+          description: "symbol to filter"
+          required: false
+          schema:
+            type: "string"
+        - in: "query"
+          name: "type"
+          description: "type to filter when looks for Order Entries"
+          required: false
+          schema:
+            type: "string"
+            enum: [
+              ASK,
+              BID]
+        - in: "query"
+          name: "sorted"
+          description: "when true order books are sorted by symbol name alphabetically"
+          required: false
+          schema:
+            type: "boolean"
+      responses:
+        '200':
+          description: Order Books By Symbol
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderBooksResponse"
+        '400':
+          description: Invalid Exchange name
+          content:
+            application/text:
+              example:
+                "Error message"
+        '500':
+          description: Invalid Exchange name
+          content:
+            application/text:
+              example:
+                "Internal Error"
+
+
+components:
+  schemas:
+    OrderBooksResponse:
+      type: "array"
+      items:
+        type: object
+        properties:
+          symbol:
+            type: "string"
+          price_avg:
+            type: "number"
+            format: double
+          quantity:
+            type: "number"
+            format: double
+      example:
+        - symbol: "AAVE-USD"
+          price_avg: 56.45
+          quantity: 191.12
+        - symbol: "BTC-USD"
+          price_avg: 123.45
+          quantity: 2.4
+        - symbol: "ETH-USD"
+          price_avg: 158.1896
+          quantity: 10

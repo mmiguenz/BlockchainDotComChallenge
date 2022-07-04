@@ -54,6 +54,7 @@ class HttpApiServer(
         install(StatusPages) {
             exceptionHandlers(logger)
         }
+        installCORS()
 
     }
 
@@ -64,6 +65,11 @@ class HttpApiServer(
                     ignoreUnknownKeys = true
                 }
             )
+        }
+    }
+    private fun Application.installCORS() {
+        install(CORS) {
+            anyHost()
         }
     }
     private fun StatusPages.Configuration.exceptionHandlers(logger: Logger) {

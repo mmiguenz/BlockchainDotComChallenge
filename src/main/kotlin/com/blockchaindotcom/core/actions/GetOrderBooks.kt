@@ -90,5 +90,3 @@ private fun List<OrderBook>.sorted(orderBySymbol: Boolean): List<OrderBook> {
     } else
         this
 }
-
-
