@@ -24,9 +24,10 @@ class HttpApiServer(
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     fun start() {
-        logger.info("Starting BlockChain Challenge API in port 8080")
+        val port= System.getenv("PORT")?.toInt() ?: 8080
+        logger.info("Starting BlockChain Challenge API in port $port")
 
-        val server = embeddedServer(Netty, port = 8080) {
+        val server = embeddedServer(Netty, port = port) {
             main()
         }
 
