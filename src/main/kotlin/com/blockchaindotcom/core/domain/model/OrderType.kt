@@ -1,6 +1,6 @@
 package com.blockchaindotcom.core.domain.model
 
-import com.blockchaindotcom.core.domain.exceptions.UnknownOrderType
+import com.blockchaindotcom.core.domain.exceptions.UnknownOrderTypeException
 
 enum class OrderType {
     ASK,
@@ -9,13 +9,13 @@ enum class OrderType {
     companion object {
         operator fun get(orderType: String?): OrderType? {
             try {
-                return when (orderType.orEmpty().trim()) {
+                return when (orderType.orEmpty().trim().uppercase()) {
                     "" -> null
                     else -> valueOf(orderType!!)
                 }
 
             } catch (ex: Throwable) {
-                throw UnknownOrderType()
+                throw UnknownOrderTypeException()
             }
         }
     }

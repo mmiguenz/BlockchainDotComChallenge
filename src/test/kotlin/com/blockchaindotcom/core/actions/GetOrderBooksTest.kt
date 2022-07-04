@@ -2,6 +2,7 @@
 
 package com.blockchaindotcom.core.actions
 
+import com.blockchaindotcom.core.domain.exceptions.InvalidSymbolException
 import com.blockchaindotcom.core.domain.model.OrderBook
 import com.blockchaindotcom.core.domain.model.OrderEntry
 import com.blockchaindotcom.core.domain.model.OrderType
@@ -14,6 +15,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 internal class GetOrderBooksTest {
     private var orderBySymbol: Boolean? = null
@@ -85,6 +87,14 @@ internal class GetOrderBooksTest {
         shouldRetrieveOrderBooksWithPriceAvgDefaultedToZero()
     }
 
+    @Test
+    fun `given a an invalid symbol should fail`() = runTest {
+        givenExistentSymbols()
+        givenASymbolToFilter("Invalid-Symbol")
+
+        assertFailsWith<InvalidSymbolException> { whenGetOrderBooks() }
+    }
+
     private fun givenAOrderBySymbolParam() {
         orderBySymbol = true
     }
@@ -93,8 +103,8 @@ internal class GetOrderBooksTest {
         orderTypeToFilter = OrderType.ASK
     }
 
-    private fun givenASymbolToFilter() {
-        symbolToFilter = BTC_USD_SYMBOL
+    private fun givenASymbolToFilter(symbol: String = BTC_USD_SYMBOL) {
+        symbolToFilter = symbol
     }
 
     private fun givenExistentOrderEntriesForEachSymbol() {
@@ -127,12 +137,12 @@ internal class GetOrderBooksTest {
     }
 
     private fun shouldRetrieveOrderBooksFilteredBySymbolAndType() {
-        val orderBooksFiltered =  listOf(OrderBook_BTC_USD_Only_ASK)
+        val orderBooksFiltered = listOf(OrderBook_BTC_USD_Only_ASK)
         assertEquals(orderBooksFiltered, actualOrderBooks)
     }
 
     private fun shouldRetrieveOrderBooksFilteredBySymbol() {
-        val orderBooksFiltered =  listOf(OrderBook_BTC_USD)
+        val orderBooksFiltered = listOf(OrderBook_BTC_USD)
         assertEquals(orderBooksFiltered, actualOrderBooks)
     }
 
@@ -152,7 +162,7 @@ internal class GetOrderBooksTest {
         private const val BID_QUANTITY = 3.0
         private const val ORDER_TOTAL_QUANTITY = ASK_QUANTITY + BID_QUANTITY
         private const val ORDER_PRICE_AVG = (ASK_PRICE * ASK_QUANTITY + BID_PRICE * BID_QUANTITY) / ORDER_TOTAL_QUANTITY
-        private const val ORDER_PRICE_AVG_ONLY_ASK = (ASK_PRICE * ASK_QUANTITY) / (ASK_QUANTITY )
+        private const val ORDER_PRICE_AVG_ONLY_ASK = (ASK_PRICE * ASK_QUANTITY) / (ASK_QUANTITY)
         private const val BTC_USD_SYMBOL = "BTC-USD"
         private const val CEUR_USDT_SYMBOL = "CEUR_USDT"
         private const val PAX_USD_SYMBOL = "PAX-USD"
