@@ -6,6 +6,8 @@ info:
 servers:
   - url: http://localhost:8080/
     description: Local Server
+  - url: https://blockchaindotcom-challenge.herokuapp.com
+    description: Heroku Server
 paths:
   /exchanges/{exchange-name}/order-books:
     get:
